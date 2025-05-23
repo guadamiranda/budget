@@ -8,7 +8,7 @@ const AmountDisplay = ({label, amount} : amountDisplayProps) => {
     return (
         <p className="text-2xl flex justify-between border-b pb-2 border-orange-300">
             <span className="text-orange-300">{label}</span>
-            <span className="text-3xl">{formatCurrency(amount)}</span>
+            <span className="text-3xl text-slate-400">{formatCurrency(amount)}</span>
         </p>
     )
 }

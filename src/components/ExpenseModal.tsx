@@ -1,22 +1,37 @@
-import { Fragment } from 'react'
+import { Fragment, type JSX } from 'react'
 import { PlusCircleIcon } from '@heroicons/react/24/solid'
-import { Dialog, Transition } from '@headlessui/react'
+import { Dialog, Transition, DialogPanel, TransitionChild, DialogBackdrop} from '@headlessui/react'
+import { useBudget } from '../hooks/useBudget'
 
-export default function ExpenseModal() {
+type ExpenseModalProp = {
+  children: JSX.Element
+}
+ 
+export default function ExpenseModal({children} : ExpenseModalProp) {
+  const { state, dispatch } = useBudget()
 
+  const handleModal = () => {
+    dispatch({type: 'show-modal'})
+  }
+
+  const handleCloseModal = () => {
+    dispatch({type: 'close-modal'})
+  }
+ 
   return (
     <>
       <div className="fixed right-5 bottom-5 flex items-center justify-center">
         <button
           type="button"
+          onClick={handleModal}
         >
           <PlusCircleIcon className='w-16 h-16 text-blue-600 rounded-full' />
         </button>
       </div>
-
-      <Transition appear show={false} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => {}}>
-          <Transition.Child
+ 
+      <Transition appear show={state.openModal} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={handleCloseModal}>
+          <TransitionChild
             as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0"
@@ -25,12 +40,13 @@ export default function ExpenseModal() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-75" />
-          </Transition.Child>
-
+            <DialogBackdrop className="fixed inset-0 bg-black/50" aria-hidden="true" />
+          </TransitionChild>
+          
+ 
           <div className="fixed inset-0 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <Transition.Child
+              <TransitionChild
                 as={Fragment}
                 enter="ease-out duration-300"
                 enterFrom="opacity-0 scale-95"
@@ -39,12 +55,10 @@ export default function ExpenseModal() {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-    
-
-    
-                </Dialog.Panel>
-              </Transition.Child>
+                <DialogPanel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  {children}
+                </DialogPanel>
+              </TransitionChild>
             </div>
           </div>
         </Dialog>
