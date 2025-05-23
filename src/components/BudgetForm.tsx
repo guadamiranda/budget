@@ -1,19 +1,23 @@
-import { useState, type ChangeEvent, type Dispatch } from "react"
-import type { BudgetActions } from "../reducers/budget-reducer"
+import { useState, type ChangeEvent, type FormEvent } from "react"
+import { useBudget } from "../hooks/useBudget"
 
-type BudgetFormProps = {
-    dispatch: Dispatch<BudgetActions>
-}
-
-const BudgetForm = ({dispatch}: BudgetFormProps) => {
+const BudgetForm = () => {
     const [budget, setBudget] = useState(0)
+    const { dispatch } = useBudget()
 
     const handleChange = (e:ChangeEvent<HTMLInputElement>) => {
         setBudget(e.target.valueAsNumber)
     }
 
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        dispatch({type: 'add-budget', payload: {budget}})
+
+    }
+
     return (
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="flex flex-col space-y-5">
                 <label htmlFor="budget" className="text-4xl text-blue-400 font-bold text-center">
                     Definir Presupuesto
