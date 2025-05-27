@@ -1,15 +1,15 @@
-import { useState, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import type { DraftExpense, Value } from "../types";
 import 'react-date-picker/dist/DatePicker.css';
-import type { DraftExpense } from "../types";
+import { useBudget } from "../hooks/useBudget";
 import DatePicker from 'react-date-picker';
 import 'react-calendar/dist/Calendar.css';
+import ErrorMessage from "./ErrorMessage";
 import { categories } from "../db/db";
 
-type ValuePiece = Date | null;
-
-type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 const ExpenseForm = () => {
+    const { state, dispatch } = useBudget()
     const [expense, setExpense] = useState<DraftExpense>({
         expenseName: '',
         amount: 0,
@@ -17,15 +17,40 @@ const ExpenseForm = () => {
         date: new Date()
     }) 
 
-    const [value, onChange] = useState<Value>(new Date());
+    const [error, setError] = useState('')
+
+    const handleChangeDate = (value:Value) => {
+        setExpense({...expense, date: value})
+    }
+
+    const handleAmount = (e:ChangeEvent<HTMLInputElement>) => {
+        setExpense({...expense, amount: Number(e.target.value)})
+    }
+
+    const handleText = (e:ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
+        const {name, value} = e.target
+        setExpense({...expense, [name]: value})
+    }
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+
+        if (Object.values(expense).includes('')) {
+            setError('Todos los campos son obligatorios')
+            return
+        }
+
+        setError('')
+        dispatch({type: 'new-expense', payload: {expense}})
+        dispatch({type: 'close-modal'})
+
     }
 
     return(
         <form className="space-y-5" onSubmit={handleSubmit}>
             <legend className="text-center text-xl text-blue-400 border-b-2 border-blue-100">Nuevo Gasto</legend>
+
+            {error && <ErrorMessage>{error}</ErrorMessage>}
 
             <div className="flex flex-col gap-2"> 
                 <label htmlFor="expenseName" className="text-md"> Nombre del Gasto: </label>
@@ -36,6 +61,7 @@ const ExpenseForm = () => {
                     className="p-2 bg-slate-100"
                     name="expenseName"
                     value={expense.expenseName}
+                    onChange={handleText}
                 />
             </div>
 
@@ -48,6 +74,7 @@ const ExpenseForm = () => {
                     className="p-2 bg-slate-100"
                     name="amount"
                     value={expense.amount}
+                    onChange={handleAmount}
                 />
             </div>
 
@@ -58,6 +85,7 @@ const ExpenseForm = () => {
                     className="p-2 bg-slate-100"
                     name="category"
                     value={expense.category}
+                    onChange={handleText}
                 >
                     <option value="">--- Seleccione una opción ---</option>
                     {categories.map((category) => <option value={category.id} key={category.id}>{category.name}</option>)}
@@ -70,7 +98,7 @@ const ExpenseForm = () => {
                     id="expenseDate" 
                     name="expenseDate" 
                     className="p-2 bg-slate-100" 
-                    onChange={onChange}
+                    onChange={handleChangeDate}
                     value={expense.date} />
             </div>
 
