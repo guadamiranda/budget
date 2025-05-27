@@ -9,7 +9,7 @@ import { categories } from "../db/db";
 
 
 const ExpenseForm = () => {
-    const { state, dispatch } = useBudget()
+    const { dispatch } = useBudget()
     const [expense, setExpense] = useState<DraftExpense>({
         expenseName: '',
         amount: 0,
