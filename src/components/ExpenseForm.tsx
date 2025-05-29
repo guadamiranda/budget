@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import type { DraftExpense, Value } from "../types";
 import 'react-date-picker/dist/DatePicker.css';
 import { useBudget } from "../hooks/useBudget";
@@ -9,7 +9,7 @@ import { categories } from "../db/db";
 
 
 const ExpenseForm = () => {
-    const { dispatch } = useBudget()
+    const { state, dispatch } = useBudget()
     const [expense, setExpense] = useState<DraftExpense>({
         expenseName: '',
         amount: 0,
@@ -18,6 +18,18 @@ const ExpenseForm = () => {
     }) 
 
     const [error, setError] = useState('')
+
+    const isEdit = () => {
+        if (state.editingId) {
+            const editExpense = state.expenses.find((expense) => expense.id === state.editingId)
+            setExpense({
+                expenseName: editExpense?.expenseName || '',
+                amount: editExpense?.amount || 0,
+                category: editExpense?.category || '',
+                date: editExpense?.date || new Date()
+            })
+        }
+    }
 
     const handleChangeDate = (value:Value) => {
         setExpense({...expense, date: value})
@@ -41,14 +53,20 @@ const ExpenseForm = () => {
         }
 
         setError('')
-        dispatch({type: 'new-expense', payload: {expense}})
+        state.editingId ? dispatch({type: 'edit-expense', payload: {expense, id: state.editingId}}) : dispatch({type: 'new-expense', payload: {expense}})
         dispatch({type: 'close-modal'})
 
     }
 
+    useEffect(() => {
+        isEdit()
+    }, [])
+
     return(
         <form className="space-y-5" onSubmit={handleSubmit}>
-            <legend className="text-center text-xl text-blue-400 border-b-2 border-blue-100">Nuevo Gasto</legend>
+            <legend className="text-center text-xl text-blue-400 border-b-2 border-blue-100">
+                {state.editingId ? 'Editar Gasto' : 'Nuevo Gasto'}
+            </legend>
 
             {error && <ErrorMessage>{error}</ErrorMessage>}
 

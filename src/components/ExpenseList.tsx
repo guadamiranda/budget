@@ -13,7 +13,7 @@ const ExpenseList = () => {
             {isEmpty ? 
                 <p className="text-center text-gray-400 text-3xl">No hay gastos</p> : 
                 <>
-                    <p className="text-center text-blue-400 text-3xl border-b pb-2 border-blue-400">Lista de gastos</p>
+                    <p className="text-center text-blue-400 text-3xl border-b pb-2 border-blue-400 my-5">Lista de gastos</p>
                     {expenses.map((expense) => <ExpenseDetail key={expense.id} expense={expense}/>)}
                 </> 
             } 
