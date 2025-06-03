@@ -3,11 +3,15 @@ import { useBudget } from "../hooks/useBudget";
 import AmountDisplay from "./AmountDisplay";
 
 const BudgetTracker = () => {
-    const {state} = useBudget()
+    const {state, dispatch} = useBudget()
 
     const availableBudget = useMemo(() => {
         return state.expenses.reduce((accumulator, currentValue) => accumulator + currentValue.amount, 0)
     }, [state.expenses])
+
+    const handleReset = () => {
+        dispatch({type: 'reset-app'})
+    }
     
     return(
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -19,6 +23,7 @@ const BudgetTracker = () => {
                 <button
                     type="button"
                     className="bg-orange-200 w-full py-2 cursor-pointer hover:bg-orange-300"
+                    onClick={handleReset}
                 >
                     Resetear App
                 </button>

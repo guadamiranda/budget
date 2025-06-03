@@ -1,3 +1,4 @@
+import FilterByCategory from "./components/FilterByCategory";
 import BudgetTracker from "./components/BudgetTracker";
 import ExpenseModal from "./components/ExpenseModal";
 import ExpenseForm from "./components/ExpenseForm";
@@ -28,6 +29,7 @@ function App() {
 
       {!isValidBudget && (
         <div className="max-w-3xl mx-auto py-10" >
+          <FilterByCategory />
           <ExpenseList />
           <ExpenseModal>
             <ExpenseForm />
